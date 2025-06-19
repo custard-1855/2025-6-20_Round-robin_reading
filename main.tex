@@ -1,22 +1,268 @@
-\documentclass{classes/report}
+\documentclass[unicode,12pt,aspectratio=169, dvipdfmx]{beamer}
+\usepackage{bxdpx-beamer}
+\usetheme[progressbar=frametitle]{metropolis}
+\renewcommand{\kanjifamilydefault}{\gtdefault}%既定をゴシック体に
+\usepackage{bm}
+
+% \usepackage{bm}
+% \usepackage{amsmath} % For math environments if needed
+% \usepackage{amssymb} % For math symbols if needed
+% \usepackage{tikz} % For custom drawings if needed
+% \usepackage{graphicx} % For images
+
+\title{介護における音響HARと連合学習を用いた異常検知}
+\author{竹本志恩}
+\institute{INIAD}
+\date{\today}
+\subject{研究報告 / 輪読}
+
+\AtBeginSection[]{
+    \frame{{目次}\tableofcontents[currentsection, hideallsubsections]} %目次スライド
+}
 
 \begin{document}
+\frame{\maketitle}
+\section{はじめに}
 
-\pagenumbering{roman}
-\subfile{sections/title}
-\newpage
+\begin{frame}{発表論文の概要}
+\begin{itemize}
+    \item \textbf{タイトル:} A Survey on Federated Learning in Human Sensing
+    \item \textbf{著者:} Mohan Li ほか
+    \item \textbf{出典:} ACM, 2025年1月
+    \item \textbf{内容:} Human Sensing分野におけるFederated Learning（FL）の包括的サーベイ
+    \begin{itemize}
+        \item 現状、課題、FLの分類、今後の研究方向を整理
+    \end{itemize}
+\end{itemize}
+\end{frame}
 
-\tableofcontents
-\clearpage
+\begin{frame}{Human Sensingとは}
+\begin{itemize}
+    \item 人の活動や生理・心理状態、環境との相互作用をセンサーで監視し、生活の質向上に貢献する分野。
+    \item センサーやウェアラブルデバイスの進展により急速に普及。
+    \item 収集データは詳細かつプライバシーに敏感な情報を含むため、**プライバシー、倫理、法的課題**が深刻。
+    \item これに対し、**連合学習（Federated Learning: FL）**は、生のユーザーデータを中央サーバーに送信することなく高精度な機械学習モデルを構築できるため、これらの懸念を軽減すると期待されている。
+\end{itemize}
+\end{frame}
 
-\pagenumbering{arabic}
+\section{前回発表時の概要と課題}
 
-\subfile{sections/abstract}
-\newpage
+\begin{frame}{前回発表時の概要と課題}
+\begin{itemize}
+    \item \textbf{背景と問題意識}
+    \begin{itemize}
+        \item 世界的な高齢化の加速と介護人材の深刻な不足は、高齢者の安全確保と自立支援を両立する**革新的なケアシステム**の開発を社会全体の喫緊の課題としている。
+        \item 特に、高齢者の転倒や容体急変といった緊急事態を**早期に、かつプライバシーに配慮した形で検知**し、関係者に迅速に通達する人間活動認識（HAR）への需要が高い。
+    \end{itemize}
+    \item \textbf{既存技術の課題}
+    \begin{itemize}
+        \item \textbf{カメラベースのHARシステム:} 視覚情報が豊富だが、**プライバシー侵害への懸念**が強く、介護対象者やその家族からの受容性を得る上で大きな障壁となる。
+        \item \textbf{常時装着型ウェアラブルセンサー:} 利用者の負担となる可能性がある。
+        \item → \textbf{非侵襲的かつプライバシーを確保**しつつ、緊急事態を効果的に捉えるアプローチが求められている。}
+    \end{itemize}
+    \item \textbf{FLへの着目}
+    \begin{itemize}
+        \item FLは**データの集約が不要**な機械学習手法であり、データをその場から動かす必要がないため、プライバシーの観点で有力な解決策である。
+    \end{itemize}
+\end{itemize}
+\end{frame}
 
-\subfile{sections/main_issue}
-\newpage
+\begin{frame}{研究目的}
+\begin{itemize}
+    \item \textbf{主要目標:} 音響ベースのHAR技術とFLフレームワークを組み合わせることで、高齢者介護現場向けの**安価かつ高精度、そしてプライバシー配慮型**の異常検知・管理者通知システムを構築すること。
+    \item \textbf{具体例:}
+    \begin{itemize}
+        \item 介護施設や在宅環境の各居室に設置したIoTデバイスを用いて環境音を収集・分析。
+        \item **転倒、異常な咳、苦痛の声**といった緊急性の高い音響イベントをリアルタイムに検知・識別。
+        \item 介護者の負担軽減と要介護者の安全確保に貢献する。
+    \end{itemize}
+\end{itemize}
+\end{frame}
 
-\subfile{sections/references}
+\section{先行研究サーベイ}
+
+\begin{frame}{Human Activity Recognition (HAR) とは}
+\begin{itemize}
+    \item \textbf{定義:} センサーデータから人の活動を自動認識する技術。
+    \item \textbf{応用例:} ヘルスケア、スマートホーム、リハビリ、転倒検知など多岐にわたる。
+    \item \textbf{主要なセンサーモダリティ:}
+    \begin{itemize}
+        \item \textbf{ウェアラブルセンサー:} スマートウォッチ・スマホ等から得られる加速度計・ジャイロスコープデータ。
+        \item \textbf{環境センサー (非装着型):} マイク、圧力センサー、PIR (受動赤外線) センサー、ドアセンサーなど。**非接触モニタリングが可能**で、ビデオベースと比較して**プライバシー保護に優れる**。
+        \item \textbf{カメラ:} 高精度だが、**プライバシー懸念が大きい**。
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{FL-HARの主要課題と対策}
+\begin{itemize}
+    \item \textbf{データ異質性 (Non-IID):}
+    \begin{itemize}
+        \item クライアント間のデータ分布の不均一性により、従来のFedAvgでは性能劣化が生じる。
+        \item \textbf{対策:} パーソナル化FL (pFL)、クラスタリングFL、堅牢な集約アルゴリズム (FedProx, SCAFFOLD)、メタ学習 (Meta-HAR) など。
+    \end{itemize}
+    \item \textbf{ラベルデータ不足:}
+    \begin{itemize}
+        \item 危機的イベントは稀にしか発生しないためデータが不足する。
+        \item \textbf{対策:} 半教師ありFL、合成データ生成、データ拡張、Time-Balanced Focal Loss などの特殊な損失関数。
+    \end{itemize}
+    \item \textbf{通信コスト:}
+    \begin{itemize}
+        \item モデルの複雑性増大に伴い、通信負荷が増大する。
+        \item \textbf{対策:} モデル圧縮・量子化、FedDL (動的レイヤー共有) などの効率的なFLアルゴリズム.
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{FL-HARの主要課題と対策 (続き)}
+\begin{itemize}
+    \item \textbf{プライバシー/セキュリティ:}
+    \begin{itemize}
+        \item 勾配漏洩やモデル反転攻撃のリスクが存在する。特にマルチラベル異常は機密性が高い。
+        \item \textbf{対策:} 差分プライバシー (DP)、準同型暗号、セキュアアグリゲーション (SA) など。
+    \end{itemize}
+    \item \textbf{システム異質性:}
+    \begin{itemize}
+        \item クライアントデバイス（エッジデバイス）の計算能力、メモリ、バッテリー容量に差がある。
+        \item \textbf{対策:} 軽量モデルアーキテクチャ、非同期FL、リソースアウェアな手法。
+    \end{itemize}
+    \item \textbf{マルチラベル/マルチイベント異常検知:}
+    \begin{itemize}
+        \item 複数の異なる異常イベントが**同時に発生する状況**を検知する。情報が豊富だが、技術的難易度が高い。
+        \item \textbf{課題:} 極端なデータ不均衡、Non-IIDデータ分布、ラベル相関のモデリング、モデル複雑性の増大。
+        \item \textbf{関連研究:} 動物科学 (FMLL)、医用画像 (FedMLP)、画像分類 (FedLGT) でのFLとマルチラベル学習の研究が進む。しかし、IMUと音響センサーを組み合わせた異種HARマルチイベントのエンドツーエンドFLシステムはまだ少ない。
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{FL-HARにおけるHARとFLの利点}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \textbf{HARの課題}
+        \begin{itemize}
+            \item プライバシー懸念 (カメラ、中央集権)
+            \item 通信コスト (大量データ転送)
+            \item データセット不足
+        \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \textbf{FL導入の利点 (介護シナリオ)}
+        \begin{itemize}
+            \item \textbf{プライバシー保護}: 生データはローカルで処理。
+            \item \textbf{パーソナル化}: 利用者・部屋ごとのモデル最適化。
+        \end{itemize}
+    \end{column}
+\end{columns}
+\vspace{0.5cm}
+\begin{figure}[h]
+    \centering
+    % 仮のイメージ図。実際の発表では、FLの分散学習の概念図や、HARのセンサーデータ収集の図を配置
+    \includegraphics[width=0.8\linewidth]{example-image-a} % Replace with actual image related to FL or HAR
+    \caption{FLシステムの概念図（例）}
+\end{figure}
+\end{frame}
+
+\section{今後の研究計画}
+
+\begin{frame}{今後の研究計画: 卒業研究 (基盤技術の確立)}
+\begin{itemize}
+    \item \textbf{音響HARにおける異常イベント認識モデルの構築}
+    \begin{itemize}
+        \item 介護現場で想定される複数の異常イベント（転倒、異常な咳、苦痛の声など）を対象に、**同時かつ正確に区別・検知可能なマルチラベル分類モデル**の開発を目指す。
+    \end{itemize}
+    \item \textbf{データ課題への対応}
+    \begin{itemize}
+        \item \textbf{データ不均衡:} Weighted Federated Averaging、Time-Balanced Focal Loss などを検証。
+        \item \textbf{Non-IIDデータ分布:} FedProx、Meta-HAR などの対応策を検証。
+    \end{itemize}
+    \item \textbf{モデル構造の探求}
+    \begin{itemize}
+        \item 音響データから効果的に時間的特徴を抽出し、ノイズ耐性を高めるモデル構造として**Hybrid LSTM-GRU** などを探求。
+        \item \textbf{目標:} 実環境におけるデータ異質性や不均衡下でも高い汎化性能を発揮するモデルの基盤を確立。
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{今後の研究計画: 大学院研究 (システムの実用化と発展)}
+\begin{itemize}
+    \item \textbf{IoTデバイス向け効率化とFL機構の探求}
+    \begin{itemize}
+        \item 卒業研究で確立したモデルをリソース制約の厳しいIoTデバイス環境へ移行し、実用化を目指す。
+        \item リアルタイム異常検知に必要な応答性と、IoTデバイスの計算能力、メモリ、通信帯域の制約を両立させる手法を開発。
+        \item \textbf{具体的な手法:} モデルの軽量化、計算負荷を分散する連合分割学習 (FSL)、重みや勾配の量子化。
+    \end{itemize}
+    \item \textbf{時間的文脈による異常検知}
+    \begin{itemize}
+        \item 音響イベントの発生頻度や持続時間など、**時間的文脈**を加味した異常検知を目指す。
+        \item 例: 普段は静かな夜に足音が聞こえるなど、背景情報を含んだ異常検知。
+    \end{itemize}
+    \item \textbf{複合異常検知のHAR応用}
+    \begin{itemize}
+        \item 複数の音響イベントを同時に検出する先行研究は存在するが、HARへの応用はされていない課題に対処する。
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{研究の意義・期待できる成果・独自性}
+\begin{itemize}
+    \item \textbf{研究の意義}
+    \begin{itemize}
+        \item 高齢者の安全確保と介護者の負担軽減に貢献。
+        \item プライバシー保護技術の進展、および個人データ保護に関する最新の法規制に適合した機械学習技術の実現へ学術的貢献。
+    \end{itemize}
+    \item \textbf{期待できる成果}
+    \begin{itemize}
+        \item プライバシーを保護しながら、高精度な音響ベースHARによるマルチラベル異常検知システム。
+        \item リソース制約の厳しいIoTデバイス上でのリアルタイム運用を可能にする効率化技術。
+        \item 多様な介護環境におけるデータ異質性への適応性と汎化性能。
+    \end{itemize}
+    \item \textbf{独自性}
+    \begin{itemize}
+        \item 複数の異常を判断するシステムの構築により、多様な緊急事態への対応を目指す点で先行研究と異なる。
+        \item 音響イベントの発生頻度や持続時間など、**時間的文脈による異常検知**、およびFLにおける**マルチラベル分類のHAR応用**は未開拓。
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{倫理的配慮}
+\begin{itemize}
+    \item \textbf{基本方針:} 音響データが機微な情報を含む可能性を踏まえ、**データ最小化の原則**を基本方針とする。
+    \item \textbf{具体策:}
+    \begin{itemize}
+        \item 生音声をデバイス外部に持ち出さず、**オンデバイスで特徴を抽出**し、データ最小化を徹底する。
+        \item 必要に応じて**差分プライバシー (DP)** や **セキュアアグリゲーション (SA)** などの追加的プライバシー強化技術 (PETs) の導入を検討する。
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{まとめ}
+
+\begin{frame}{まとめ}
+\begin{itemize}
+    \item Human Sensingの進展には**データプライバシー課題**が障害となっている。
+    \item **Federated Learning (FL)** はその解決策として有望である。
+    \item **HAR (Human Activity Recognition)** はFL応用が特に活発な分野である。
+    \item 本研究は、HARにおける**マルチラベル/マルチイベント異常検知**と**リアルタイム通知**という複雑な課題にFLを適用し、プライバシーと実用性を両立させることを目指す。
+\end{itemize}
+\end{frame}
+
+\begin{frame}{今後の展望}
+\begin{itemize}
+    \item \textbf{実環境に即した実験が必要:} 介護現場の多様な環境でのデータ収集と検証が重要。
+    \item \textbf{FL-HARの実装とサーベイを並行:} 理論と実践の統合。
+    \item \textbf{問題の把握と計画の切り分け:} 複雑な課題を段階的に解決。
+    \item \textbf{研究計画の具体化を目指す:} 最終的なシステム実現に向けたロードマップ。
+    \item \textbf{特に注力する点:}
+    \begin{itemize}
+        \item \textbf{介護環境特化型マルチラベル音響異常データセットの構築・公開}。
+        \item \textbf{真のマルチラベル学習のための堅牢かつ効率的なFLアルゴリズム開発}。
+        \item \textbf{FLにおけるリアルタイム・マルチラベル異常通知システムの設計}。
+        \item \textbf{複雑なイベントシグネチャに対する高度なプライバシー保護強化}。
+        \item \textbf{クロスモーダル連合学習（音響+IMUなど）の探求}。
+        \item \textbf{動的マルチラベル異常パターンに対する連合継続学習}。
+        \item \textbf{リソース効率の良いオンデバイスモデルの最適化}。
+    \end{itemize}
+\end{itemize}
+\end{frame}
 
 \end{document}
