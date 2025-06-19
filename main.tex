@@ -1,172 +1,416 @@
 \documentclass[unicode,12pt,aspectratio=169,dvipdfmx]{beamer}
+
 \usepackage{bxdpx-beamer}
 \usetheme[progressbar=frametitle]{metropolis}
 \renewcommand{\kanjifamilydefault}{\gtdefault}
-\usepackage{bm}
-\usepackage{graphicx}
+\usepackage{bm} % For bold math symbols if needed, generally useful for bold text too
 
-\title{介護における音響HARと連合学習を用いた異常検知}
-\author{竹本志恩}
-\institute{INIAD}
+% Custom colors if desired (uncomment and adjust)
+% \definecolor{myblue}{HTML}{0078D4} % Example blue
+% \setbeamercolor{frametitle}{fg=myblue}
+% \setbeamercolor{title in head/foot}{fg=myblue}
+
+\title{\textbf{介護における音響HARと連合学習を用いた異常検知に関するサーベイ}}
+\author{\textbf{竹本志恩}}
+\institute{\textbf{INIAD}}
 \date{\today}
 \subject{研究報告 / 輪読}
 
+% セクション開始時に目次を表示
 \AtBeginSection[]{
-  \frame{\frametitle{目次}\tableofcontents[currentsection, hideallsubsections]}
+\begin{frame}[plain]
+\frametitle{目次}
+\tableofcontents[currentsection, hideallsubsections]
+\end{frame}
 }
 
 \begin{document}
 
-%----------------------------------------
-% タイトル＋目次
-%----------------------------------------
+% -----------------------------------------------------------------------------
+% Slide 1: Title Slide
+% -----------------------------------------------------------------------------
 \begin{frame}
-  \maketitle
-  \vspace{0.8cm}
-  \tableofcontents
+\titlepage
 \end{frame}
 
-%----------------------------------------
-\section{背景と課題}
-
-\begin{frame}{高齢化と介護現場の課題}
-  \begin{itemize}
-    \item 世界的な高齢化の加速と介護人材の深刻な不足
-    \item 高齢者の転倒や容体急変の早期検知ニーズ
-    \item 介護者の負担軽減と入所者の自立支援
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{プライバシー配慮と非侵襲性の要請}
-  \begin{itemize}
-    \item カメラベース：高精度だがプライバシー侵害の懸念大
-    \item ウェアラブル：装着負担が課題
-    \item 環境音（マイク）：非接触・安価・プライバシー保護に有利
-  \end{itemize}
-\end{frame}
-
-%----------------------------------------
-\section{FL と HAR の概要}
-
-\begin{frame}{HAR (Human Activity Recognition) とは}
-  \begin{itemize}
-    \item 人の活動をセンサーデータから自動認識
-    \item 応用例：転倒検知、スマートホーム、リハビリ支援 など
-    \item センサーモダリティ
+% -----------------------------------------------------------------------------
+% Slide 2: Introduction: Background and Research Objective
+% -----------------------------------------------------------------------------
+\section{はじめに：背景と研究目的}
+\begin{frame}{はじめに：背景と研究目的}
+\begin{itemize}
+    \item \textbf{背景：高齢化社会と介護現場の課題}
     \begin{itemize}
-      \item ウェアラブル (加速度計・ジャイロ)
-      \item 環境センサー (マイク・PIR・ドアセンサ)
-      \item カメラ (高精度だがプライバシー懸念)
+        \item 高齢者・要介護者の自立支援と安全確保が重要
+        \item 介護者の負担軽減も喫緊の課題
     \end{itemize}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Federated Learning (FL) の基本とメリット}
-  \begin{itemize}
-    \item データを中央サーバに集約せず，各端末で学習→パラメタを共有
-    \item メリット
+    \item \textbf{Ambient Assisted Living (AAL) とHuman Activity Recognition (HAR) の役割}
     \begin{itemize}
-      \item プライバシー保護：生データはローカルに留まる
-      \item パーソナライズ：ユーザ／環境ごとに最適化可能
-      \item データ所有権を維持しつつ大規模協調学習
+        \item ICTとセンサー技術で生活の質を向上させるAALが注目
+        \item AALにおいて、**HAR (人の活動認識)** は最も一般的な方法論
     \end{itemize}
-  \end{itemize}
-\end{frame}
-
-%----------------------------------------
-\section{先行研究サーベイ}
-
-\begin{frame}{FL-HAR が直面する主な技術課題}
-  \begin{itemize}
-    \item データ非均一性 (Non-IID)
-    \item ラベル不足・不均衡
-    \item 通信コスト・デバイス異質性
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{課題と対応技術マトリクス}
-  \begin{tabular}{p{0.3\textwidth}p{0.65\textwidth}}
-    \hline
-    課題 & 主な対応策 \\
-    \hline
-    Non-IID & FedProx, SCAFFOLD, パーソナライズFL, メタ学習 \\
-    ラベル不足 & 合成データ生成, 半教師ありFL, Time-Balanced Focal Loss \\
-    通信負荷 & モデル圧縮・量子化, FedDL (動的レイヤー共有) \\
-    \hline
-  \end{tabular}
-\end{frame}
-
-\begin{frame}{セキュリティとマルチラベル異常検知}
-  \begin{itemize}
-    \item プライバシー攻撃対策：差分プライバシー(DP), 準同型暗号, セキュアアグリゲーション
-    \item マルチラベル異常検知の難しさ
+    \item \textbf{プライバシー懸念と連合学習 (FL) の必要性}
     \begin{itemize}
-      \item 極端なクラス不均衡
-      \item ラベル相関のモデリング
-      \item 非IIDデータ下での複雑モデル学習
+        \item センサーデータは個人情報を含み、プライバシーが懸念される
+        \item **連合学習 (Federated Learning, FL)** は、生データを共有せずにモデルを学習可能であり、プライバシー保護に有効
     \end{itemize}
-  \end{itemize}
+    \item \textbf{本研究の目的}
+    \begin{itemize}
+        \item 音響HARとFLを組み合わせ、**安価かつ高精度、プライバシー配慮型**の異常検知・管理者通知システムを構築
+        \item 転倒や苦痛の声など、**緊急性の高い音響イベント**をリアルタイムに検知・識別
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
-%----------------------------------------
-\section{提案アプローチ}
-
-\begin{frame}{システム全体フロー}
-  \begin{center}
-    \includegraphics[width=0.75\linewidth]{example-image} % システム概念図
-  \end{center}
-  \begin{itemize}
-    \item 環境音収集→オンデバイス特徴抽出→FLサーバでモデル集約
-  \end{itemize}
+% -----------------------------------------------------------------------------
+% Slide 3: Uniqueness of this Research: Multi-label Anomaly Detection
+% -----------------------------------------------------------------------------
+\begin{frame}{本研究の独自性：マルチラベル異常検知}
+\begin{itemize}
+    \item \textbf{複数の異常イベント同時検知の必要性}
+    \begin{itemize}
+        \item 介護現場では、転倒、異常な咳、苦痛の声など、複数の緊急事態が**同時かつ複合的**に発生し得る
+        \item 例: 転倒 \textbf{かつ} 苦痛の声が聞こえる
+    \end{itemize}
+    \item \textbf{従来のHAR-FL研究との違い}
+    \begin{itemize}
+        \item 多くの先行研究は日常行動認識 (ADL) や単一の異常イベント識別が目的
+        \item 本研究は、**複数の異常を同時かつ正確に区別・検知可能なマルチラベル分類モデル**の開発を目指す
+    \end{itemize}
+    \item \textbf{利点：より深い洞察と迅速な対応}
+    \begin{itemize}
+        \item 複数のイベントから、より詳細な状況や重篤度を推測可能
+        \item 介護者の適切な判断と迅速な対応を支援
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
-\begin{frame}{モデル設計のポイント}
-  \begin{itemize}
-    \item Hybrid LSTM–GRU による時間的特徴抽出
-    \item マルチラベル分類：Time-Balanced Focal Loss
-    \item Non-IID 対策：FedProx, Meta-HAR
-  \end{itemize}
+% -----------------------------------------------------------------------------
+% Slide 4: Basics and Challenges of Acoustic HAR
+% -----------------------------------------------------------------------------
+\begin{frame}{音響HARの基礎と課題}
+\begin{itemize}
+    \item \textbf{音響HAR (A-HAR) の利点}
+    \begin{itemize}
+        \item **非接触モニタリング**が可能
+        \item ビデオベースのシステムと比較して**視覚的なプライバシーを保護**できる
+    \end{itemize}
+    \item \textbf{A-HARの主な課題}
+    \begin{itemize}
+        \item **環境騒音:** 周囲の騒音（家電、会話、交通音など）によるターゲットイベントのマスキング
+        \item **サイレント活動:** 音を伴わない静かな活動の検知は困難
+        \item **音響イベントの多様性:** 同じイベントでも状況によって生じる音が多様（例: 転倒音）
+        \item **ポリフォニー:** 複数の音イベントが時間的に重複する際の区別
+    \end{itemize}
+    \item \textbf{ロバストなシステム構築に向けて}
+    \begin{itemize}
+        \item ロバストな特徴抽出手法や騒音耐性の高いモデルの開発が不可欠
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
-\begin{frame}{プライバシー保護の具体策}
-  \begin{itemize}
-    \item オンデバイスで生音声を保持し，特徴量のみ転送
-    \item 差分プライバシー(DP)，セキュアアグリゲーション(SA) の検討
-  \end{itemize}
+% -----------------------------------------------------------------------------
+% Slide 5: Basics and Benefits of Federated Learning (FL) for HAR
+% -----------------------------------------------------------------------------
+\begin{frame}{連合学習 (FL) の基礎とHARへの利点}
+\begin{itemize}
+    \item \textbf{FLの定義}
+    \begin{itemize}
+        \item 分散型の機械学習パラダイム
+        \item 複数のクライアントが**生データを交換することなく**、共有グローバルモデルを協調的に訓練
+        \item クライアントは自身のデータでモデルを訓練し、**モデルの更新情報のみ**をサーバーに送信
+    \end{itemize}
+    \item \textbf{HAR-FLのシナジー}
+    \begin{itemize}
+        \item 分散した機密性の高い音響データを、プライバシーを損なうことなく活用可能
+        \item 大規模かつ多様なデータセットを基に、**堅牢なHARモデル**を開発
+    \end{itemize}
+    \item \textbf{介護シナリオにおけるFLの利点}
+    \begin{itemize}
+        \item **プライバシー保護:** 生データは部屋内ローカルで処理され、外部に出ない
+        \item **パーソナル化:** 利用者/部屋ごとのモデル最適化が可能
+        \item **通信コスト削減:** モデル更新のみの通信で効率的
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
-%----------------------------------------
-\section{今後の研究計画}
-
-\begin{frame}{卒業研究段階：基盤技術の確立}
-  \begin{itemize}
-    \item 異常音マルチラベルモデルの構築・定量評価
-    \item データ不均衡対策・Non-IID 対策の比較検証
-  \end{itemize}
+% -----------------------------------------------------------------------------
+% Slide 6: Key Challenges in FL-HAR (1): Data-related
+% -----------------------------------------------------------------------------
+\section{FL-HARにおける主要課題}
+\begin{frame}{FL-HARにおける主要課題 (1)：データ関連}
+\begin{itemize}
+    \item \textbf{極端なデータ不均衡}
+    \begin{itemize}
+        \item 転倒や苦痛の声など、危機的イベントは稀にしか発生しない
+        \item 特定の異常の「組み合わせ」はさらに稀であり、マルチラベル分類器の訓練を困難にする
+    \end{itemize}
+    \item \textbf{Non-IID (非独立同一分布) データ分布}
+    \begin{itemize}
+        \item クライアント（各家庭・部屋）間で環境音響特性や利用者の行動パターンが異なり、データが均一でない
+        \item 特にマルチラベルHAR異常では、ラベルの「同時確率分布」や「相関」もクライアント間で異なる
+    \end{itemize}
+    \item \textbf{マルチラベルHAR異常データセットの不足}
+    \begin{itemize}
+        \item FL研究に適した、マルチラベルHAR異常に特化した公開大規模データセットが不足しており、比較研究を妨げている
+    \end{itemize}
+    \item \textbf{ラベル相関のモデリング}
+    \begin{itemize}
+        \item 異常イベントはしばしば相関する（例: つまずき $\rightarrow$ 転倒 $\rightarrow$ 叫び声）が、分散FL設定でのモデリングは困難
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
-\begin{frame}{大学院段階：実用化と拡張}
-  \begin{itemize}
-    \item IoTデバイス向け軽量化・連合分割学習(FSL)
-    \item 時間的文脈を活かした複合異常検知
-  \end{itemize}
+% -----------------------------------------------------------------------------
+% Slide 7: Key Challenges in FL-HAR (2): Model & FL-specific
+% -----------------------------------------------------------------------------
+\begin{frame}{FL-HARにおける主要課題 (2)：モデル・FL特有}
+\begin{itemize}
+    \item \textbf{モデル複雑性の増大}
+    \begin{itemize}
+        \item 複数の同時イベントとその相関を検知できるモデルは、単一イベント検知器よりも複雑
+    \end{itemize}
+    \item \textbf{通信オーバーヘッド}
+    \begin{itemize}
+        \item 複雑なモデルや多面的な更新は、通信コストを増加させる
+    \end{itemize}
+    \item \textbf{通知遅延}
+    \begin{itemize}
+        \item クリティカルなマルチイベントに対する**リアルタイム**での確実な通知が最も重要であり、多段階処理や複雑な推論は遅延を引き起こす可能性
+    \end{itemize}
+    \item \textbf{プライバシー懸念の増幅}
+    \begin{itemize}
+        \item マルチラベル異常は、生活や健康危機に関する非常に機密性の高いパターンを明らかにする可能性がある
+        \item 稀なイベントの「組み合わせ」に関する情報は、より一意に識別可能であるため、FLのモデル更新からの情報漏洩リスクが高まる
+    \end{itemize}
+    \item \textbf{リソース制約}
+    \begin{itemize}
+        \item IoTデバイスは計算能力、メモリ、バッテリー容量に制限がある
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
-%----------------------------------------
-\section{まとめ \& 質疑}
-
-\begin{frame}{まとめ}
-  \begin{itemize}
-    \item 介護現場での音響HAR×FLはプライバシーと実用性を両立
-    \item マルチラベル異常検知モデルの独自性
-    \item 今後：実環境検証→システム実装へ
-  \end{itemize}
+% -----------------------------------------------------------------------------
+% Slide 8: Key Challenges in FL-HAR (3): Personalization & Continual Learning
+% -----------------------------------------------------------------------------
+\begin{frame}{FL-HARにおける主要課題 (3)：パーソナル化・継続学習}
+\begin{itemize}
+    \item \textbf{パーソナル化されたマルチイベント検知}
+    \begin{itemize}
+        \item 個人によって異常パターンや組み合わせが異なるため、共有知識を活用しつつ、これらの特性に合わせてモデルを調整する必要がある
+    \end{itemize}
+    \item \textbf{新規／未知の異常の組み合わせへの汎化 (コールドスタート)}
+    \begin{itemize}
+        \item システムが学習していない稀な、あるいは全く新しい異常の組み合わせをどれだけうまく検知できるか
+        \item 例: {転倒 $\textbf{かつ}$ 発作音 $\textbf{かつ}$ 非定型運動パターン}
+    \end{itemize}
+    \item \textbf{進化する異常パターンへの継続学習 (コンセプトドリフト)}
+    \begin{itemize}
+        \item 異常の定義やその顕在化は時間とともに変化する可能性があり、モデルが適応し続ける必要がある
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
-\begin{frame}{ご清聴ありがとうございました／質疑応答}
-  \begin{center}
-    ご質問をどうぞ
-  \end{center}
+% -----------------------------------------------------------------------------
+% Slide 9: Strategies for Addressing Challenges (1): Data Imbalance & Non-IID
+% -----------------------------------------------------------------------------
+\section{課題への対応戦略}
+\begin{frame}{課題への対応戦略 (1)：データ不均衡・Non-IID}
+\begin{itemize}
+    \item \textbf{データ不均衡への対処}
+    \begin{itemize}
+        \item \textbf{合成データ生成 (GANなど):} 希少イベントのデータ不足を補う
+        \item \textbf{データ拡張 (SMOTEなど):} データセットの多様性を増す
+        \item \textbf{特殊な損失関数:}
+        \begin{itemize}
+            \item **Time-Balanced Focal Loss:** 音響イベントの持続時間のばらつきに対応
+            \item Focal Loss: 少数クラスへの重み付け
+        \end{itemize}
+        \item **ワンクラス分類・転移学習:** 異常パターンを効率的に学習
+    \end{itemize}
+    \item \textbf{Non-IIDデータへの対処}
+    \begin{itemize}
+        \item \textbf{パーソナライズドFL (pFL):} 各クライアントのローカルデータに適したモデルを学習
+        \item \textbf{堅牢な集約アルゴリズム:}
+        \begin{itemize}
+            \item **FedProx:** クライアント間のデータの偏りを考慮
+            \item SCAFFOLD, FedNova
+        \end{itemize}
+        \item \textbf{クラスタ化FL:} 類似データ分布のクライアントをグループ化
+        \item \textbf{ドメイン適応:} 新しい環境への適応
+    \end{itemize}
+    \item \textbf{モデル構造例：Hybrid LSTM-GRU}
+    \begin{itemize}
+        \item 時系列データの時間的依存関係を効率的に捉え、認識精度を向上
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% Slide 10: Strategies for Addressing Challenges (2): Privacy Enhancement
+% -----------------------------------------------------------------------------
+\begin{frame}{課題への対応戦略 (2)：プライバシー強化}
+\begin{itemize}
+    \item \textbf{データ最小化の原則}
+    \begin{itemize}
+        \item 生音声をデバイス外部に持ち出さず、**オンデバイスで特徴を抽出**し、データ最小化を徹底
+    \end{itemize}
+    \item \textbf{追加的プライバシー強化技術 (PETs) の導入}
+    \begin{itemize}
+        \item FLの基本的なプライバシー保護に加え、より強固な保護を実現
+        \item **差分プライバシー (Differential Privacy, DP):** モデル更新にノイズを付加し、個々のデータサンプルの寄与を曖昧化
+        \item **セキュアアグリゲーション (Secure Aggregation, SA):** 各クライアントのモデル更新を、個々の内容を知られることなく集約
+        \item **準同型暗号 (Homomorphic Encryption, HE):** 暗号化されたデータに対して直接計算を可能にする技術
+    \end{itemize}
+    \item \textbf{課題とトレードオフ}
+    \begin{itemize}
+        \item PETsの導入は、モデルの精度低下や計算・通信オーバーヘッドの増加を招く可能性があり、バランスが重要
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% Slide 11: Strategies for Addressing Challenges (3): Model & Resource Efficiency
+% -----------------------------------------------------------------------------
+\begin{frame}{課題への対応戦略 (3)：モデル・リソース効率化}
+\begin{itemize}
+    \item \textbf{モデルの軽量化}
+    \begin{itemize}
+        \item モデル圧縮、量子化、枝刈りなどにより、リソース制約の厳しいIoTデバイスでの動作を可能にする
+    \end{itemize}
+    \item \textbf{計算負荷の分散}
+    \begin{itemize}
+        \item **連合分割学習 (Federated Split Learning, FSL):** モデルをクライアント側とサーバー側に分割し、エッジデバイスの計算負荷を軽減
+    \end{itemize}
+    \item \textbf{効率的な通信プロトコル}
+    \begin{itemize}
+        \item 勾配圧縮、非同期通信、選択的更新などにより、通信オーバーヘッドを削減
+    \end{itemize}
+    \item \textbf{マルチモーダル情報の効率的な融合}
+    \begin{itemize}
+        \item IMU、音響、環境センサーなど多様なモダリティからの情報を統合し、マルチラベル出力のために効果的に融合するFL戦略の開発
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% Slide 12: Related Research: Advances in Multi-label FL
+% -----------------------------------------------------------------------------
+\begin{frame}{主要関連研究：マルチラベルFLの進展}
+\begin{itemize}
+    \item \textbf{Federated Multi-Label Learning (FMLL)}
+    \begin{itemize}
+        \item FLとマルチラベル学習技術を直接組み合わせた概念を導入
+        \item 動物科学分野のデータセットで高い精度を達成
+    \end{itemize}
+    \item \textbf{FedMLP: Federated Multi-Label learning with Partial annotation}
+    \begin{itemize}
+        \item 部分的なアノテーション（欠損ラベル）を持つマルチラベルFLシナリオに対応
+        \item 疑似ラベリングや整合性正則化を用いて欠損ラベルを補完
+    \end{itemize}
+    \item \textbf{FedLGT: Language-Guided Transformer for Federated Multi-Label Classification}
+    \begin{itemize}
+        \item マルチラベル分類のための新しいFLフレームワーク
+        \item 普遍的ラベル埋め込みやクライアント認識型マスク付きラベル埋め込みでラベル不一致問題に対処
+    \end{itemize}
+    \item \textbf{HAR異常検知への応用可能性}
+    \begin{itemize}
+        \item これらのマルチラベルFLの研究は、HAR分野に直接応用可能であり、本研究の基盤となる
+        \item ただし、HAR特有の課題（極端な不均衡、時間的相関など）に最適化されたアルゴリズムはまだ不足
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% Slide 13: Future Research Directions (1)
+% -----------------------------------------------------------------------------
+\section{今後の研究方向性}
+\begin{frame}{今後の研究方向性 (1)}
+\begin{itemize}
+    \item \textbf{FL向け標準化マルチラベルHAR異常データセットの開発}
+    \begin{itemize}
+        \item 複数の同時センサーストリームをキャプチャし、共起する異常イベントにラベル付けされた**現実的なデータセット**が不可欠
+        \item FL評価用に分割可能なデータセットの整備
+    \end{itemize}
+    \item \textbf{堅牢かつ効率的なFLアルゴリズムの開発}
+    \begin{itemize}
+        \item HARマルチラベルにおける**ラベル相関**と**極端な不均衡**を明示的に扱うFL互換の損失関数とモデルアーキテクチャ
+        \item 高度なマルチラベル学習技術（例: グラフニューラルネットワーク、アテンションメカニズム）のFLへの適応
+        \item 連合マルチタスク学習 (FMTL) の調査
+    \end{itemize}
+    \item \textbf{リアルタイム・マルチラベル異常通知システムの構築}
+    \begin{itemize}
+        \item クライアントからのマルチラベル異常アラートを効率的かつ安全に集約し、遅延を最小限に抑えるプロトコル設計
+        \item 介護者／ユーザーへ**包括的かつ理解しやすい通知**を提示
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% Slide 14: Future Research Directions (2)
+% -----------------------------------------------------------------------------
+\begin{frame}{今後の研究方向性 (2)}
+\begin{itemize}
+    \item \textbf{複雑なイベントシグネチャに対する高度なプライバシー保護}
+    \begin{itemize}
+        \item 複合イベントが生成する機密性の高いデータシグネチャから保護するための、より強力なプライバシー保証 (例: 高度な差分プライバシー、検証可能な計算)
+    \end{itemize}
+    \item \textbf{クロスモーダル連合学習}
+    \begin{itemize}
+        \item IMU、音響、IoTセンサーなど多様なモダリティからの情報をFLフレームワーク内で統合する戦略の開発
+    \end{itemize}
+    \item \textbf{動的マルチラベル異常ランドスケープのための連合継続学習}
+    \begin{itemize}
+        \item 時間とともに進化する異常パターン（コンセプトドリフト）に適応し、以前学習した知識を保持できるFCLフレームワーク
+    \end{itemize}
+    \item \textbf{リソース効率の良いオンデバイスモデル}
+    \begin{itemize}
+        \item エッジデバイス（ウェアラブル、IoT）への高度なマルチラベル異常検知展開のためのモデル圧縮、量子化、効率的なニューラルアーキテクチャ研究
+    \end{itemize}
+    \item \textbf{因果的推論・説明可能なAI (XAI) の統合}
+    \begin{itemize}
+        \item 異常間の因果関係を組み込むことで、よりロバストで解釈可能なシステムを構築
+        \item システムの判断根拠を透明性をもって提示し、信頼醸成と適切な対応判断を支援
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% Slide 15: Conclusion
+% -----------------------------------------------------------------------------
+\section{まとめと結論}
+\begin{frame}{まとめと結論}
+\begin{itemize}
+    \item \textbf{現状の概観}
+    \begin{itemize}
+        \item FLをHARに応用する研究は進展しており、特に複数のイベントタイプや異常を扱う能力が萌芽期にある
+        \item しかし、真に複数の異常イベントを同時検知し、通知まで行う統合されたFL-HARシステムは、まだ研究開発の初期段階
+    \end{itemize}
+    \item \textbf{主要課題の再確認}
+    \begin{itemize}
+        \item 極端なデータ不均衡と異質性、モデルの複雑性、通信オーバーヘッド、高機密性なプライバシー懸念、リアルタイム通知
+    \end{itemize}
+    \item \textbf{今後の道筋}
+    \begin{itemize}
+        \item 標準的なマルチラベルHAR異常データセットの開発、FL技術の融合とHARへの特化
+        \item プライバシー保護技術の強化、継続学習の統合、クロスモーダルFL、因果関係、XAI、運用を見据えた研究
+    \end{itemize}
+    \item \textbf{最終的な考察}
+    \begin{itemize}
+        \item FLを用いたHARにおけるマルチラベル異常検知・通知技術は、パーソナライズドヘルスケアや個人の安全モニタリングに**大きな可能性**を秘めている
+        \item プライバシーを保護しつつ、より質の高い生活支援サービスの実現が期待される
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% Slide 16: Q&A (Optional, but good practice for presentations)
+% -----------------------------------------------------------------------------
+\begin{frame}
+\frametitle{ご清聴ありがとうございました}
+\centering
+\Huge{\textbf{ご質問はございますか？}}
+\vfill
 \end{frame}
 
 \end{document}
