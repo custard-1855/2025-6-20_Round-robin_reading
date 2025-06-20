@@ -42,7 +42,7 @@
   \begin{itemize}
     \item 高齢化社会における介護現場の負担増大
     \item HARに着目: 介護者の負担軽減
-    \item センサー／音響データのプライバシー懸念
+    \item センサデータのプライバシー懸念にFLで対処
     \item 目的：異常イベントをリアルタイム検知＋通知
   \end{itemize}
 \end{frame}
@@ -61,14 +61,16 @@
 \end{frame}
 % Slide 5: Acoustic HAR Basics
 % \section{音響HARの基礎と課題}
-\begin{frame}{音響HARの基礎と課題}
+\begin{frame}{音響HARの課題}
   \begin{itemize}
-    \item 非接触モニタリング＋視覚プライバシー保護
-    \item 環境騒音によるマスキング
-    \item 高静音性活動の検知が困難
-    \item 音の多様性／同時発生の問題
-    
-    $>$ 頑健なモデルが必要
+    \item 利点: 非接触モニタリング＋視覚プライバシー保護
+    \item 課題
+    \begin{itemize}
+        \item 環境騒音によるマスキング
+        \item 高静音性活動の検知が困難
+        \item 音の多様性／同時発生の問題
+    \end{itemize}
+    \item 頑健なモデルが必要
   \end{itemize}
 \end{frame}
 % Slide 6: FL Basics & Benefits
@@ -83,24 +85,34 @@
 % Slide 7: Challenges I (Data)
 \section{FL-HARの主要課題}
 \begin{frame}{主要課題①：データ関連}
-  \begin{itemize}
-    \item 極端なデータ不均衡（稀イベント、多ラベル共起）
-
-    $|-$複数異常の組み合わせはほぼない
-    \item Non-IID分布
-    
-    $|-$各利用者の音響特性や行動の差
-    \item ラベルの関係を捉えたモデリング
-    \item マルチラベル異常データセットの不足
-  \end{itemize}
+\begin{itemize}
+  \item 極端なデータ不均衡（稀イベント、多ラベル共起）
+    \begin{itemize}
+      \item 複数異常の組み合わせはほぼない
+    \end{itemize}
+  \item Non-IID分布
+    \begin{itemize}
+      \item 各利用者の音響特性や行動の差
+    \end{itemize}
+  \item ラベルの関係を捉えたモデリング
+  \item マルチラベルデータセットの不足
+\end{itemize}
 \end{frame}
+
 % Slide 8: Challenges II (Model, Comm, Privacy)
 \begin{frame}{主要課題②：モデル・通信・プライバシー}
   \begin{itemize}
-    \item モデル複雑化 $<$$-$$>$ 通信オーバーヘッド
+    \item モデル複雑化 \(\leftrightarrow\)  通信オーバーヘッド
     \item リアルタイム通知の遅延リスク
-    \item 稀な複合イベントの機密性への影響
-  \end{itemize}
+    \begin{itemize}
+        \item イベント検知\(\rightarrow\)異常検知の手順を検討中
+        \item 段階的な処理は推論速度が低下しそう
+    \end{itemize}
+    \item マルチラベルによるプライバシリスクの上昇
+    \begin{itemize}
+        \item マルチクラスより情報が増加
+    \end{itemize}
+\end{itemize}
 \end{frame}
 % Slide 9: Challenges III (Personalization & CL)
 \begin{frame}{主要課題③：パーソナライズ化・継続学習}
@@ -112,11 +124,14 @@
 \end{frame}
 % Slide 10: Strategy I (Data & Non-IID)
 \section{課題解決の戦略}
+
+% マルチラベルの解説がないのでは?
+
 \begin{frame}{対策①：データ不均衡・Non-IID対策}
   \begin{itemize}
     \item 合成データ生成 (GAN, SMOTE)
-    \item 少数クラスを強調: Time-Balanced Focal Loss など特殊損失
-    \item パーソナライズドFL: FedProx, SCAFFOLD
+    \item 少数クラスを強調: Time-Balanced Focal Loss\cite{TBFL} など特殊損失
+    \item 集約法の工夫: FedProx\cite{FedProx}など
     \item モデル統合の効率化: クラスタリングFL／ドメイン適応
   \end{itemize}
 \end{frame}
@@ -133,30 +148,29 @@
 \begin{frame}{対策③：モデル・リソース効率化}
   \begin{itemize}
     \item モデル軽量化: モデル圧縮/量子化/枝刈り
-    \item 計算の分割: Federated Split Learning (FSL)
+    \item 計算の分割: Federated Split Learning (FSL)\cite{FSL}
     \item 通信量削減: 勾配圧縮・選択的更新
     % \item マルチモーダル融合戦略
   \end{itemize}
 \end{frame}
 % Slide 13: Related Work
 % \section{関連研究動向}
-% \begin{frame}{関連研究：マルチラベルFL}
-%   \begin{itemize}
-%     \item FMLL, FedMLP, FedLGT の概略
-%     \item HAR異常検知への適用可能性
-%     \item 課題：HAR特有の極端不均衡、時間相関
-%   \end{itemize}
-% \end{frame}
+\begin{frame}{関連研究：マルチラベルFL}
+  \begin{itemize}
+    \item マルチラベルFLフレームワークが存在
+    \item 例: FMLL\cite{FMLL}, FedMLP\cite{FedMLP}, FedLGT\cite{FedLGT}
+    \item 参考になりそう
+  \end{itemize}
+\end{frame}
 % Slide 14: Future Directions
 % \section{今後の展望}
 \begin{frame}{今後の研究展望}
   \begin{itemize}
     \item 標準化データセットの整備
-    \item FL対応マルチラベル損失／新アーキテクチャ開発
+    \item FL対応マルチラベル損失/新アーキテクチャ開発
 
     $|-$マルチラベルFLなど参考
-    \item 連合継続学習
-    \item 因果推論の検討
+    \item 連合継続学習・因果推論の検討
   \end{itemize}
 \end{frame}
 % Slide 15: Conclusion & Q&A
@@ -172,26 +186,26 @@
 %----------------------------------------
 % 補足資料スライド (配布用)
 %----------------------------------------
-\appendix 
+% \appendix 
 
 \section{補足資料}
 % \subsection{データ不均衡・Non-IIDへの対応}
-\begin{frame}{データ不均衡・Non-IIDへの対応：SMOTE}
-\begin{itemize}
-    \item \textbf{概要}：\textbf{Synthetic Minority Over-sampling Technique}の略
-    \item \textbf{目的}：\textbf{少数クラスのデータ不足}に起因する不均衡を緩和
-    \item \textbf{動作原理}：既存の少数サンプル間の特徴空間で補間することで、\textbf{合成サンプルを生成}。音響データの場合、MFCCなどの\textbf{抽出された音響特徴量}に適用
-    \item \textbf{利点と課題}：
-    \begin{itemize}
-        \item 実装が比較的容易で、多くのライブラリで利用可能
-        \item 単純な適用では\textbf{過学習}の可能性
-        \item 音響的に意味のある合成サンプルを生成できない、時間的連続性が破壊される可能性も
-        \item \textbf{希少イベント固有の音響特性}を保持することが重要
-    \end{itemize}
-\end{itemize}
-\end{frame}
+% \begin{frame}{データ不均衡・Non-IIDへの対応：SMOTE}
+% \begin{itemize}
+%     \item \textbf{概要}：\textbf{Synthetic Minority Over-sampling Technique}の略
+%     \item \textbf{目的}：\textbf{少数クラスのデータ不足}に起因する不均衡を緩和
+%     \item \textbf{動作原理}：既存の少数サンプル間の特徴空間で補間することで、\textbf{合成サンプルを生成}。音響データの場合、MFCCなどの\textbf{抽出された音響特徴量}に適用
+%     \item \textbf{利点と課題}：
+%     \begin{itemize}
+%         \item 実装が比較的容易で、多くのライブラリで利用可能
+%         \item 単純な適用では\textbf{過学習}の可能性
+%         \item 音響的に意味のある合成サンプルを生成できない、時間的連続性が破壊される可能性も
+%         \item \textbf{希少イベント固有の音響特性}を保持することが重要
+%     \end{itemize}
+% \end{itemize}
+% \end{frame}
 
-\begin{frame}{データ不均衡・Non-IIDへの対応：Time-Balanced Focal Loss}
+\begin{frame}{データ不均衡・Non-IIDへの対応：Time-Balanced Focal Loss \cite{TBFL}}
 \begin{itemize}
     \item \textbf{概要}：持続時間のばらつきによるデータ不均衡を考えた損失関数
     \item \textbf{目的}：イベントの発生頻度だけでなく、\textbf{持続時間も考慮}
@@ -265,7 +279,7 @@
 % \end{frame}
 
 % \subsection{リソース効率化技術}
-\begin{frame}{リソース効率化技術：Federated Split Learning (FSL)}
+\begin{frame}{リソース効率化技術：Federated Split Learning (FSL)\cite{FSL}}
 \begin{itemize}
     \item \textbf{概要}：\textbf{モデルの計算負荷をクライアントとサーバーで分割}
     \item \textbf{目的}：\textbf{エッジデバイスの計算能力、メモリ、通信帯域の制約を両立}させながら、モデル訓練や推論を効率的に実行
@@ -279,7 +293,7 @@
 \end{frame}
 
 % \subsection{マルチラベルFLフレームワークの概要とHAR適用課題}
-\begin{frame}{マルチラベルFLフレームワーク：FMLL}
+\begin{frame}{マルチラベルFLフレームワーク：FMLL\cite{FMLL}}
 \begin{itemize}
     \item \textbf{動作原理}：
     \begin{itemize}
@@ -294,7 +308,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}{マルチラベルFLフレームワーク：FedMLP}
+\begin{frame}{マルチラベルFLフレームワーク：FedMLP\cite{FedMLP}}
 \begin{itemize}
     \item \textbf{概要}：{部分的なアノテーション（欠損ラベル）を持つマルチラベルFL}に対応
     % \item \textbf{動作原理}：
@@ -310,7 +324,7 @@
 \end{itemize}
 \end{frame}
 
-% \begin{frame}{マルチラベルFLフレームワーク：FedLGT}
+% \begin{frame}{マルチラベルFLフレームワーク：FedLGT\cite{FedLGT}}
 % \begin{itemize}
 %     \item 異なるラベル関連性や、陽性ラベルセットの不整合があっても\textbf{堅牢なグローバルモデルを学習}
 %     \item \textbf{動作原理}：
@@ -327,12 +341,79 @@
 % \end{itemize}
 % \end{frame}
 
+\section{実装など}
+\begin{frame}{FedProx\cite{FedProx}}
+\begin{itemize}
+    \item FedProxを実装し,FedAvgと比較
+    \item flower+Dockerで実装を試みたが中断
+    \item Githubの検証用コードを利用: https://flower.ai/docs/baselines/fedprox.html
+    \item これから: 実行結果を配布ノートブックで可視化し,ローカルでの性能を検証
+\end{itemize}
+\end{frame}
+
+\begin{frame}{これから: マルチラベル分類}
+\begin{itemize}
+    \item 日常生活動作について、マルチラベル音響分類を検証
+    \item 使用中の行動認識モデルはスペクトログラムを使うため,画像分類を参考にできそう
+    \item 単純な分類を実装
+    \begin{itemize}
+        \item ESC-50データセットをマルチラベル用に加工
+        \item マルチラベル用に損失関数を変更
+        \item cf. https://qiita.com/koshian2/items/ab5e0c68a257585d7c6f
+    \end{itemize}
+    \item より良い分類を実装
+    \begin{itemize}
+        \item 実装を探す: https://paperswithcode.com/task/multi-label-classificationなど
+        \item Transformerでマルチラベル画像分類: https://github.com/SlongLiu/query2labels など参照
+    \end{itemize}
+\end{itemize}
+\end{frame}
 
 
-\begin{frame}{参考文献一覧}
+
+\begin{frame}[allowframebreaks]{参考文献一覧}
   \small
   \begin{thebibliography}{9}
-    \bibitem{ref2} … 
+
+  \bibitem{FSL}
+  J.~Ndeko, S.~Shaon, A.~Beal, A.~Sahoo, and D.~C.~Nguyen, 
+  "Federated Split Learning for Human Activity Recognition with Differential Privacy," 
+  \href{https://arxiv.org/abs/2411.06263}{arXiv:2411.06263}, 2024.
+
+  \bibitem{sec}
+  V.~Mothukuri \emph{et~al.},
+  "A survey on security and privacy of federated learning," 
+  \emph{Future Generation Computer Systems}, vol.~115, pp.~619–640, 2021. 
+  \href{https://doi.org/10.1016/j.future.2020.10.007}{doi:10.1016/j.future.2020.10.007}.
+
+  \bibitem{FedProx}
+  T.~Li \emph{et~al.}, 
+  "Federated Optimization in Heterogeneous Networks," 
+  arXiv:1812.06127 [cs.LG, stat.ML], 2020.
+
+  \bibitem{TBFL}
+  S.~Park and M.~Elhilali, 
+  "Time-Balanced Focal Loss for Audio Event Detection," ICASSP 2022, pp.~311–315.
+
+  \bibitem{FMLL}
+  B.~Ghasemkhani \emph{et~al.},
+  "Federated Multi-Label Learning (FMLL): Innovative Method for Classification Tasks in Animal Science,"
+  \emph{Animals}, vol.~14, no.~14, p.~2021, 2024.
+  \href{https://doi.org/10.3390/ani14142021}{doi:10.3390/ani14142021}.
+
+  \bibitem{FedMLP}
+  Z.~Sun \emph{et~al.},
+  "FedMLP: Federated Multi-label Medical Image Classification Under Task Heterogeneity,"
+  \emph{Lecture Notes in Computer Science}, vol.~15010, pp.~394–404, 2024.
+  \href{https://doi.org/10.1007/978-3-031-72117-5_37}{doi:10.1007/978-3-031-72117-5\_37}.
+
+  \bibitem{FedLGT}
+  I-Jieh Liu \emph{et~al.}, 
+  "Language-Guided Transformer for Federated Multi-Label Classification," 
+  arXiv:2312.07165, 2023.
+  \url{https://arxiv.org/abs/2312.07165}
+
   \end{thebibliography}
 \end{frame}
+
 \end{document}
