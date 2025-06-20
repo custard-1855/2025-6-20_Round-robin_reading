@@ -52,11 +52,18 @@
   \begin{itemize}
     \item 複数の異常イベントを同時／複合的に検知
     \item マルチラベル分類で音響イベントを解釈
-    
-    $|$-例1: 咳と苦痛の声が同時に聞こえる$>$重篤な状態
-    
-    $|$-例2: 転倒に似た音を,他のイベントを基に判断
-    \item 深い状況把握と迅速対応支援を実現
+    \begin{itemize}
+        \item 画像中のりんごとバナナを識別
+        \item 咳と苦痛の声が同時に聞こえる$>$重篤な状態
+        \item 転倒に似た音を,他のイベントを基に判断
+    \end{itemize}
+    \item マルチラベルイベント検知 + 異常検知
+    \begin{itemize}
+        \item どの時間帯に、何のイベントが、どういう組で起こったか識別
+        \item 深い状況把握と迅速対応を実現
+    \end{itemize}
+
+
   \end{itemize}
 \end{frame}
 % Slide 5: Acoustic HAR Basics
@@ -348,6 +355,7 @@
     \item flower+Dockerで実装を試みたが中断
     \item Githubの検証用コードを利用: https://flower.ai/docs/baselines/fedprox.html
     \item これから: 実行結果を配布ノートブックで可視化し,ローカルでの性能を検証
+    \item できれば: クライアント数を段階的に増やし,FedProxとFedAvgを比較 
 \end{itemize}
 \end{frame}
 
@@ -357,14 +365,14 @@
     \item 使用中の行動認識モデルはスペクトログラムを使うため,画像分類を参考にできそう
     \item 単純な分類を実装
     \begin{itemize}
-        \item ESC-50データセットをマルチラベル用に加工
-        \item マルチラベル用に損失関数を変更
+        \item ESC-50データセットをマルチラベル用に加工、損失関数を変更
         \item cf. https://qiita.com/koshian2/items/ab5e0c68a257585d7c6f
     \end{itemize}
     \item より良い分類を実装
     \begin{itemize}
         \item 実装を探す: https://paperswithcode.com/task/multi-label-classificationなど
         \item Transformerでマルチラベル画像分類: https://github.com/SlongLiu/query2labels など参照
+        \item 並行して異常イベント系のデータ収集/分析、モデル構築/検証が必要
     \end{itemize}
 \end{itemize}
 \end{frame}
