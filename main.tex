@@ -43,7 +43,7 @@
     \item 高齢化社会における介護現場の負担増大
     \item HARに着目: 介護者の負担軽減
     \item センサデータのプライバシー懸念にFLで対処
-    \item 目的：異常イベントをリアルタイム検知＋通知
+    \item 目的：FLで異常イベントをリアルタイム検知＋通知
   \end{itemize}
 \end{frame}
 % Slide 4: Uniqueness
@@ -143,14 +143,15 @@
   \end{itemize}
 \end{frame}
 % Slide 11: Strategy II (Privacy)
-\begin{frame}{対策②：プライバシー強化}
-  \begin{itemize}
-    \item オンデバイス特徴抽出によるデータ最小化
-    \item ノイズ付与: 差分プライバシー (DP)
-    \item 暗号化集約: セキュアアグリゲーション (SA)／同型暗号 (HE)
-    \item 精度とオーバーヘッドのバランス
-  \end{itemize}
-\end{frame}
+% \begin{frame}{対策②：プライバシー強化}
+%   \begin{itemize}
+%     \item オンデバイス特徴抽出によるデータ最小化
+%     \item ノイズ付与: 差分プライバシー (DP)
+%     \item 暗号化集約: セキュアアグリゲーション (SA)／同型暗号 (HE)
+%     \item 精度とオーバーヘッドのバランス
+%   \end{itemize}
+% \end{frame}
+
 % Slide 12: Strategy III (Model & Efficiency)
 \begin{frame}{対策③：モデル・リソース効率化}
   \begin{itemize}
@@ -171,13 +172,13 @@
 \end{frame}
 % Slide 14: Future Directions
 % \section{今後の展望}
-\begin{frame}{今後の研究展望}
+\begin{frame}{今後の展望}
   \begin{itemize}
     \item 標準化データセットの整備
     \item FL対応マルチラベル損失/新アーキテクチャ開発
 
     $|-$マルチラベルFLなど参考
-    \item 連合継続学習・因果推論の検討
+    % \item 連合継続学習・因果推論の検討
   \end{itemize}
 \end{frame}
 % Slide 15: Conclusion & Q&A
@@ -195,7 +196,7 @@
 %----------------------------------------
 % \appendix 
 
-\section{補足資料}
+% \section{補足資料}
 % \subsection{データ不均衡・Non-IIDへの対応}
 % \begin{frame}{データ不均衡・Non-IIDへの対応：SMOTE}
 % \begin{itemize}
@@ -212,23 +213,23 @@
 % \end{itemize}
 % \end{frame}
 
-\begin{frame}{データ不均衡・Non-IIDへの対応：Time-Balanced Focal Loss \cite{TBFL}}
-\begin{itemize}
-    \item \textbf{概要}：持続時間のばらつきによるデータ不均衡を考えた損失関数
-    \item \textbf{目的}：イベントの発生頻度だけでなく、\textbf{持続時間も考慮}
-    \item \textbf{動作原理}：
-    \begin{itemize}
-        \item 標準的なFocal Lossをクラスごとの重み $w_c$で拡張
-        \item $w_c$は、データ量（音源/クリップ数）とイベント持続時間（フレームの比率$r_c$）を考慮
-        \item \textbf{希少で持続時間の短い音響イベントの学習が強化され、検出精度が向上}
-        % \item 式は以下
-        %     \begin{equation*}
-        %     \text{TBFL}(p,y) = -\sum_{c} w_c \left\{ y_c (1-p_c)^\gamma \log(p_c) + (1-y_c) p_c^\gamma \log(1-p_c) \right\}
-        %     \end{equation*}
-        %     ここで、$w_c \propto \frac{1-\beta^{c k} \times r_c}{1-\beta^{c}}$であり、$\sum_c w_c = C$（$C$はターゲットクラス数）です。
-    \end{itemize}
-\end{itemize}
-\end{frame}
+% \begin{frame}{データ不均衡・Non-IIDへの対応：Time-Balanced Focal Loss \cite{TBFL}}
+% \begin{itemize}
+%     \item \textbf{概要}：持続時間のばらつきによるデータ不均衡を考えた損失関数
+%     \item \textbf{目的}：イベントの発生頻度だけでなく、\textbf{持続時間も考慮}
+%     \item \textbf{動作原理}：
+%     \begin{itemize}
+%         \item 標準的なFocal Lossをクラスごとの重み $w_c$で拡張
+%         \item $w_c$は、データ量（音源/クリップ数）とイベント持続時間（フレームの比率$r_c$）を考慮
+%         \item \textbf{希少で持続時間の短い音響イベントの学習が強化され、検出精度が向上}
+%         % \item 式は以下
+%         %     \begin{equation*}
+%         %     \text{TBFL}(p,y) = -\sum_{c} w_c \left\{ y_c (1-p_c)^\gamma \log(p_c) + (1-y_c) p_c^\gamma \log(1-p_c) \right\}
+%         %     \end{equation*}
+%         %     ここで、$w_c \propto \frac{1-\beta^{c k} \times r_c}{1-\beta^{c}}$であり、$\sum_c w_c = C$（$C$はターゲットクラス数）です。
+%     \end{itemize}
+% \end{itemize}
+% \end{frame}
 
 % \begin{frame}{データ不均衡・Non-IIDへの対応：ドメイン適応}
 % \begin{itemize}
@@ -244,21 +245,21 @@
 % \end{frame}
 
 % \subsection{プライバシー強化技術}
-\begin{frame}{プライバシー強化技術：差分プライバシー (DP)}
-\begin{itemize}
-    \item \textbf{目的}：個々のデータサンプルの寄与を曖昧にし、漏洩リスクを保証
-    \item \textbf{動作原理}：
-    \begin{itemize}
-        \item モデル更新（勾配や重みなど）に\textbf{ノイズを付加}
-        \item Federated Split Learning (FSL) では、中間活性化情報に\textbf{ガウスノイズ}
-    \end{itemize}
-    \item \textbf{課題}：以下のトレードオフ
-    \begin{itemize}
-        \item モデルの精度低下
-        \item 計算・通信オーバーヘッドの増加
-    \end{itemize}
-\end{itemize}
-\end{frame}
+% \begin{frame}{プライバシー強化技術：差分プライバシー (DP)}
+% \begin{itemize}
+%     \item \textbf{目的}：個々のデータサンプルの寄与を曖昧にし、漏洩リスクを保証
+%     \item \textbf{動作原理}：
+%     \begin{itemize}
+%         \item モデル更新（勾配や重みなど）に\textbf{ノイズを付加}
+%         \item Federated Split Learning (FSL) では、中間活性化情報に\textbf{ガウスノイズ}
+%     \end{itemize}
+%     \item \textbf{課題}：以下のトレードオフ
+%     \begin{itemize}
+%         \item モデルの精度低下
+%         \item 計算・通信オーバーヘッドの増加
+%     \end{itemize}
+% \end{itemize}
+% \end{frame}
 
 % \begin{frame}{プライバシー強化技術：セキュアアグリゲーション (SA)}
 % \begin{itemize}
@@ -286,50 +287,50 @@
 % \end{frame}
 
 % \subsection{リソース効率化技術}
-\begin{frame}{リソース効率化技術：Federated Split Learning (FSL)\cite{FSL}}
-\begin{itemize}
-    \item \textbf{概要}：\textbf{モデルの計算負荷をクライアントとサーバーで分割}
-    \item \textbf{目的}：\textbf{エッジデバイスの計算能力、メモリ、通信帯域の制約を両立}させながら、モデル訓練や推論を効率的に実行
-    \item \textbf{動作原理}：
-    \begin{itemize}
-        \item モデルの層を分割点（\textbf{`cut layer`}または\textbf{`split layer`}）で分け、\textbf{クライアント側でモデルの一部（例：特徴抽出層）を処理}し、\textbf{中間活性化情報}をサーバーに送信
-        \item \textbf{サーバー側で残りのモデル処理（例：分類層）、損失計算、およびバックプロパゲーションを実行}
-        \item 例: クライアント側にLSTM層、サーバー側に出力層（Dense+Softmax）を配置
-    \end{itemize}
-\end{itemize}
-\end{frame}
+% \begin{frame}{リソース効率化技術：Federated Split Learning (FSL)\cite{FSL}}
+% \begin{itemize}
+%     \item \textbf{概要}：\textbf{モデルの計算負荷をクライアントとサーバーで分割}
+%     \item \textbf{目的}：\textbf{エッジデバイスの計算能力、メモリ、通信帯域の制約を両立}させながら、モデル訓練や推論を効率的に実行
+%     \item \textbf{動作原理}：
+%     \begin{itemize}
+%         \item モデルの層を分割点（\textbf{`cut layer`}または\textbf{`split layer`}）で分け、\textbf{クライアント側でモデルの一部（例：特徴抽出層）を処理}し、\textbf{中間活性化情報}をサーバーに送信
+%         \item \textbf{サーバー側で残りのモデル処理（例：分類層）、損失計算、およびバックプロパゲーションを実行}
+%         \item 例: クライアント側にLSTM層、サーバー側に出力層（Dense+Softmax）を配置
+%     \end{itemize}
+% \end{itemize}
+% \end{frame}
 
-% \subsection{マルチラベルFLフレームワークの概要とHAR適用課題}
-\begin{frame}{マルチラベルFLフレームワーク：FMLL\cite{FMLL}}
-\begin{itemize}
-    \item \textbf{動作原理}：
-    \begin{itemize}
-        \item マルチラベルデータセットを\textbf{バイナリ関連性 (Binary Relevance) 戦略}に基づき複数の二値データセットに分解
-        \item 各二値データセットで\textbf{ローカルモデル（例: REPTree）を訓練}し、中央ノードでこれらのローカルモデルを\textbf{集約}してグローバルモデルを作成
-    \end{itemize}
-    \item \textbf{HAR適用時の課題}：
-    \begin{itemize}
-        \item 現状、\textbf{動物科学分野のデータセット}で検証されており [33, 35]、\textbf{HAR異常データへの直接的な適用性は未検証}
-        \item ベース分類器としてREPTreeを使用しており,表現力の限界が懸念
-    \end{itemize}
-\end{itemize}
-\end{frame}
+% % \subsection{マルチラベルFLフレームワークの概要とHAR適用課題}
+% \begin{frame}{マルチラベルFLフレームワーク：FMLL\cite{FMLL}}
+% \begin{itemize}
+%     \item \textbf{動作原理}：
+%     \begin{itemize}
+%         \item マルチラベルデータセットを\textbf{バイナリ関連性 (Binary Relevance) 戦略}に基づき複数の二値データセットに分解
+%         \item 各二値データセットで\textbf{ローカルモデル（例: REPTree）を訓練}し、中央ノードでこれらのローカルモデルを\textbf{集約}してグローバルモデルを作成
+%     \end{itemize}
+%     \item \textbf{HAR適用時の課題}：
+%     \begin{itemize}
+%         \item 現状、\textbf{動物科学分野のデータセット}で検証されており [33, 35]、\textbf{HAR異常データへの直接的な適用性は未検証}
+%         \item ベース分類器としてREPTreeを使用しており,表現力の限界が懸念
+%     \end{itemize}
+% \end{itemize}
+% \end{frame}
 
-\begin{frame}{マルチラベルFLフレームワーク：FedMLP\cite{FedMLP}}
-\begin{itemize}
-    \item \textbf{概要}：{部分的なアノテーション（欠損ラベル）を持つマルチラベルFL}に対応
-    % \item \textbf{動作原理}：
-    % \begin{itemize}
-    %     \item \textbf{第1段階}：ウォームアップモデルで\textbf{クラスプロトタイプを生成}し、自己適応型閾値 (ST) による\textbf{疑似ラベリングを用いて欠損ラベルを補完}します [38-41]。クラス不均衡には重み付き部分クラス (WPC) 損失とロジット調整を使用します [38, 39, 41, 42]。
-    %     \item \textbf{第2段階}：\textbf{グローバルモデルを教師}とし、\textbf{整合性正則化}を行うことで、欠損クラス知識の忘却を防ぎます [38-40]。
-    % \end{itemize}
-    \item \textbf{HAR適用時の課題}：
-    \begin{itemize}
-        \item 医療データセットで検証されている
-        \item \textbf{疑似ラベリングの精度が全体の性能に影響を与える}可能性
-    \end{itemize}
-\end{itemize}
-\end{frame}
+% \begin{frame}{マルチラベルFLフレームワーク：FedMLP\cite{FedMLP}}
+% \begin{itemize}
+%     \item \textbf{概要}：{部分的なアノテーション（欠損ラベル）を持つマルチラベルFL}に対応
+%     % \item \textbf{動作原理}：
+%     % \begin{itemize}
+%     %     \item \textbf{第1段階}：ウォームアップモデルで\textbf{クラスプロトタイプを生成}し、自己適応型閾値 (ST) による\textbf{疑似ラベリングを用いて欠損ラベルを補完}します [38-41]。クラス不均衡には重み付き部分クラス (WPC) 損失とロジット調整を使用します [38, 39, 41, 42]。
+%     %     \item \textbf{第2段階}：\textbf{グローバルモデルを教師}とし、\textbf{整合性正則化}を行うことで、欠損クラス知識の忘却を防ぎます [38-40]。
+%     % \end{itemize}
+%     \item \textbf{HAR適用時の課題}：
+%     \begin{itemize}
+%         \item 医療データセットで検証されている
+%         \item \textbf{疑似ラベリングの精度が全体の性能に影響を与える}可能性
+%     \end{itemize}
+% \end{itemize}
+% \end{frame}
 
 % \begin{frame}{マルチラベルFLフレームワーク：FedLGT\cite{FedLGT}}
 % \begin{itemize}
@@ -348,16 +349,16 @@
 % \end{itemize}
 % \end{frame}
 
-\section{実装など}
-\begin{frame}{FedProx\cite{FedProx}}
-\begin{itemize}
-    \item FedProxを実装し,FedAvgと比較
-    \item flower+Dockerで実装を試みたが中断
-    \item Githubの検証用コードを利用: https://flower.ai/docs/baselines/fedprox.html
-    \item これから: 実行結果を配布ノートブックで可視化し,ローカルでの性能を検証
-    \item できれば: クライアント数を段階的に増やし,FedProxとFedAvgを比較 
-\end{itemize}
-\end{frame}
+% \section{実装など}
+% \begin{frame}{FedProx\cite{FedProx}}
+% \begin{itemize}
+%     \item FedProxを実装し,FedAvgと比較
+%     \item flower+Dockerで実装を試みたが中断
+%     \item Githubの検証用コードを利用: https://flower.ai/docs/baselines/fedprox.html
+%     \item これから: 実行結果を配布ノートブックで可視化し,ローカルでの性能を検証
+%     \item できれば: クライアント数を段階的に増やし,FedProxとFedAvgを比較 
+% \end{itemize}
+% \end{frame}
 
 \begin{frame}{これから: マルチラベル分類}
 \begin{itemize}
